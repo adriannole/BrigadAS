@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Paciente</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to right, #ece9e6, #ffffff);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            max-width: 900px;
+            margin-top: 50px;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        h2 {
+            color: #2a6041;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 3rem;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary, .btn-secondary {
+            font-size: 1rem;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background-color: #2a6041;
+            border-color: #2a6041;
+        }
+
+        .btn-primary:hover {
+            background-color: #204d36;
+            border-color: #204d36;
+        }
+
+        .btn-secondary {
+            background-color: #34495e;
+            border-color: #34495e;
+            color: white;
+            position: absolute;
+            top: +10px;
+            left: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: #2c3e50;
+            border-color: #2c3e50;
+            transform: translateY(-3px);
+        }
+
+        label {
+            color: #34495e;
+            font-weight: 600;
+        }
+
+        .form-control {
+            border: 1px solid #cbd5e0;
+            padding: 5px;
+            font-size: 1rem;
+            border-radius: 10px;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 10px rgba(42, 96, 65, 0.2);
+            border-color: #2a6041;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .text-danger {
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .custom-checkbox input[type="checkbox"] {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'index' %}" class="btn btn-secondary">Volver al Panel</a>
+        <h2>Registro de Paciente</h2>
+
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            <strong>Errores en el formulario:</strong> Verifica los campos obligatorios y las posibles duplicaciones.
+        </div>
+        {% endif %}
+
+        <form method="POST" class="shadow p-4 rounded bg-light">
+            {% csrf_token %}
+
+            <!-- Datos Personales -->
+            <div class="form-group">
+                {{ form.cedula.label_tag }}
+                {{ form.cedula }}
+                {% if form.cedula.errors %}
+                    <div class="text-danger">{{ form.cedula.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.apellidos_nombres.label_tag }}
+                {{ form.apellidos_nombres }}
+                {% if form.apellidos_nombres.errors %}
+                    <div class="text-danger">{{ form.apellidos_nombres.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.telefono.label_tag }}
+                {{ form.telefono }}
+                {% if form.telefono.errors %}
+                    <div class="text-danger">{{ form.telefono.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.sexo.label_tag }}
+                {{ form.sexo }}
+                {% if form.sexo.errors %}
+                    <div class="text-danger">{{ form.sexo.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.sector.label_tag }}
+                {{ form.sector }}
+                {% if form.sector.errors %}
+                    <div class="text-danger">{{ form.sector.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.fecha_nacimiento.label_tag }}
+                {{ form.fecha_nacimiento }}
+                {% if form.fecha_nacimiento.errors %}
+                    <div class="text-danger">{{ form.fecha_nacimiento.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="id_edad">Edad:</label>
+                <input type="text" id="id_edad" name="edad" class="form-control" readonly>
+            </div>
+
+            <!-- Casillas de Verificación -->
+            <div class="form-group">
+                <div class="custom-control custom-checkbox">
+                    {{ form.afiliado_seguro }}
+                    {{ form.afiliado_seguro.label_tag }}
+                    {% if form.afiliado_seguro.errors %}
+                        <div class="text-danger">{{ form.afiliado_seguro.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="id_discapacidad">Discapacidad:</label>
+                {{ form.discapacidad }}
+                {% if form.discapacidad.errors %}
+                    <div class="text-danger">{{ form.discapacidad.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Datos de Salud -->
+            <div class="form-group">
+                {{ form.porcentaje_discapacidad.label_tag }}
+                {{ form.porcentaje_discapacidad }}
+                {% if form.porcentaje_discapacidad.errors %}
+                    <div class="text-danger">{{ form.porcentaje_discapacidad.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.tipo_discapacidad.label_tag }}
+                {{ form.tipo_discapacidad }}
+                {% if form.tipo_discapacidad.errors %}
+                    <div class="text-danger">{{ form.tipo_discapacidad.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.antecedentes_patologicos_personales.label_tag }}
+                {{ form.antecedentes_patologicos_personales }}
+                {% if form.antecedentes_patologicos_personales.errors %}
+                    <div class="text-danger">{{ form.antecedentes_patologicos_personales.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.antecedentes_patologicos_familiares.label_tag }}
+                {{ form.antecedentes_patologicos_familiares }}
+                {% if form.antecedentes_patologicos_familiares.errors %}
+                    <div class="text-danger">{{ form.antecedentes_patologicos_familiares.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.presion_arterial.label_tag }}
+                {{ form.presion_arterial }}
+                {% if form.presion_arterial.errors %}
+                    <div class="text-danger">{{ form.presion_arterial.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.peso.label_tag }}
+                {{ form.peso }}
+                {% if form.peso.errors %}
+                    <div class="text-danger">{{ form.peso.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.talla.label_tag }}
+                {{ form.talla }}
+                {% if form.talla.errors %}
+                    <div class="text-danger">{{ form.talla.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="id_imc">IMC:</label>
+                <input type="text" id="id_imc" name="imc" class="form-control" readonly>
+            </div>
+            <div class="form-group">
+                <label for="id_diagnostico_imc">Diagnóstico IMC:</label>
+                <input type="text" id="id_diagnostico_imc" name="diagnostico_imc" class="form-control" readonly>
+            </div>
+            <div class="form-group">
+                {{ form.temperatura.label_tag }}
+                {{ form.temperatura }}
+                {% if form.temperatura.errors %}
+                    <div class="text-danger">{{ form.temperatura.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.frecuencia_cardiaca.label_tag }}
+                {{ form.frecuencia_cardiaca }}
+                {% if form.frecuencia_cardiaca.errors %}
+                    <div class="text-danger">{{ form.frecuencia_cardiaca.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.frecuencia_respiratoria.label_tag }}
+                {{ form.frecuencia_respiratoria }}
+                {% if form.frecuencia_respiratoria.errors %}
+                    <div class="text-danger">{{ form.frecuencia_respiratoria.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.nivel_glucosa.label_tag }}
+                {{ form.nivel_glucosa }}
+                {% if form.nivel_glucosa.errors %}
+                    <div class="text-danger">{{ form.nivel_glucosa.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.saturacion.label_tag }}
+                {{ form.saturacion }}
+                {% if form.saturacion.errors %}
+                    <div class="text-danger">{{ form.saturacion.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Información Adicional -->
+            <div class="form-group">
+                {{ form.diagnostico.label_tag }}
+                {{ form.diagnostico }}
+                {% if form.diagnostico.errors %}
+                    <div class="text-danger">{{ form.diagnostico.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.cie_10.label_tag }}
+                {{ form.cie_10 }}
+                {% if form.cie_10.errors %}
+                    <div class="text-danger">{{ form.cie_10.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.observacion.label_tag }}
+                {{ form.observacion }}
+                {% if form.observacion.errors %}
+                    <div class="text-danger">{{ form.observacion.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.responsable.label_tag }}
+                {{ form.responsable }}
+                {% if form.responsable.errors %}
+                    <div class="text-danger">{{ form.responsable.errors }}</div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block mt-4">Registrar</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+    // Función para calcular el IMC y diagnosticarlo
+    function calcularIMC() {
+        const peso = parseFloat(document.getElementById('id_peso').value);
+        const talla = parseFloat(document.getElementById('id_talla').value);
+        let imc = '';
+        let diagnostico = '';
+
+        if (peso && talla) {
+            imc = (peso / (talla * talla)).toFixed(2);
+
+            if (imc < 16) {
+                diagnostico = 'Delgadez severa';
+            } else if (imc >= 16 && imc < 17) {
+                diagnostico = 'Delgadez moderada';
+            } else if (imc >= 17 && imc < 18.5) {
+                diagnostico = 'Delgadez leve';
+            } else if (imc >= 18.5 && imc < 25) {
+                diagnostico = 'Peso normal';
+            } else if (imc >= 25 && imc < 30) {
+                diagnostico = 'Sobrepeso';
+            } else if (imc >= 30 && imc < 35) {
+                diagnostico = 'Obesidad grado I';
+            } else if (imc >= 35 && imc < 40) {
+                diagnostico = 'Obesidad grado II';
+            } else {
+                diagnostico = 'Obesidad grado III (obesidad mórbida)';
+            }
+        }
+
+        document.getElementById('id_imc').value = imc;
+        document.getElementById('id_diagnostico_imc').value = diagnostico;
+    }
+
+        // Función para calcular la edad
+        function calcularEdad() {
+            const fechaNacimiento = new Date(document.getElementById('id_fecha_nacimiento').value);
+            const hoy = new Date();
+            let edad = '';
+
+            if (fechaNacimiento) {
+                edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+                const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+                if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+                    edad--;
+                }
+            }
+
+            document.getElementById('id_edad').value = edad;
+        }
+
+        // Event listeners para actualizar en tiempo real
+        document.getElementById('id_peso').addEventListener('input', calcularIMC);
+        document.getElementById('id_talla').addEventListener('input', calcularIMC);
+        document.getElementById('id_fecha_nacimiento').addEventListener('input', calcularEdad);
+
+        // Función para habilitar/deshabilitar campos de discapacidad
+        document.getElementById('id_discapacidad').addEventListener('change', function() {
+            const discapacidadSeleccionada = document.getElementById('id_discapacidad').value === 'True';
+            const porcentajeDiscapacidad = document.getElementById('id_porcentaje_discapacidad');
+            const tipoDiscapacidad = document.getElementById('id_tipo_discapacidad');
+
+            if (discapacidadSeleccionada) {
+                porcentajeDiscapacidad.removeAttribute('readonly');
+                tipoDiscapacidad.removeAttribute('readonly');
+            } else {
+                porcentajeDiscapacidad.setAttribute('readonly', 'readonly');
+                tipoDiscapacidad.setAttribute('readonly', 'readonly');
+                porcentajeDiscapacidad.value = '';
+                tipoDiscapacidad.value = '';
+            }
+        });
+
+        // Inicialización de los campos de discapacidad en caso de recarga
+        (function() {
+            const discapacidadSeleccionada = document.getElementById('id_discapacidad').value === 'True';
+            const porcentajeDiscapacidad = document.getElementById('id_porcentaje_discapacidad');
+            const tipoDiscapacidad = document.getElementById('id_tipo_disapacidad');
+
+            if (!discapacidadSeleccionada) {
+                porcentajeDiscapacidad.setAttribute('readonly', 'readonly');
+                tipoDiscapacidad.setAttribute('readonly', 'readonly');
+            }
+        })();
+    </script>
+</body>
+</html>

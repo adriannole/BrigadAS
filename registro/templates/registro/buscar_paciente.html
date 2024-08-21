@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Paciente</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        h2 {
+            color: #2a6041;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            animation: fadeIn 2s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .btn-primary, .btn-secondary, .btn-warning, .btn-danger, .btn-info {
+            font-size: 1rem;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #2a6041;
+            border-color: #2a6041;
+        }
+
+        .btn-primary:hover {
+            background-color: #204d36;
+            border-color: #204d36;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+            transform: translateY(-2px);
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+        }
+
+        .btn-info:hover {
+            background-color: #138496;
+            border-color: #117a8b;
+            transform: translateY(-2px);
+        }
+
+        .table th {
+            background-color: #2a6041;
+            color: white;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .action-buttons a {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Buscar Paciente</h2>
+        <div class="button-group">
+            <a href="{% url 'index' %}" class="btn btn-secondary">Volver al Panel</a>
+            <form method="GET">
+                <button type="submit" class="btn btn-danger">Cancelar Búsqueda</button>
+            </form>
+        </div>
+        <form method="GET">
+            <div class="form-group">
+                <label for="query">Buscar por cédula o nombre:</label>
+                <input type="text" id="query" name="query" class="form-control" placeholder="Ingrese cédula o nombre" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Buscar</button>
+        </form>
+
+        {% if resultados %}
+            <table class="table table-bordered table-striped mt-4">
+                <thead>
+                    <tr>
+                        <th>Cédula</th>
+                        <th>Apellidos y Nombres</th>
+                        <th>Teléfono</th>
+                        <th>Especialidad</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for paciente in resultados %}
+                        <tr>
+                            <td>{{ paciente.cedula }}</td>
+                            <td>{{ paciente.apellidos_nombres }}</td>
+                            <td>{{ paciente.telefono }}</td>
+                            <td>{{ paciente.especialidad.nombre }}</td>
+                            <td class="action-buttons">
+                                <a href="{% url 'editar_paciente' paciente.id %}" class="btn btn-warning">Editar</a>
+                                <a href="{% url 'visualizar_paciente' paciente.id %}" class="btn btn-info">Ver</a>
+                                <a href="{% url 'descargar_paciente_pdf' paciente.id %}" class="btn btn-info">Descargar PDF</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-center mt-4">No se encontraron resultados</p>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Pacientes</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            margin-top: 50px;
+            max-width: 1400px;
+        }
+
+        h2 {
+            color: #2a6041;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            background-color: #2a6041;
+            border-color: #2a6041;
+            transition: background-color 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .btn-primary:hover {
+            background-color: #204d36;
+            border-color: #204d36;
+        }
+
+        .btn-danger {
+            float: right;
+            background-color: #d9534f;
+            border-color: #d43f3a;
+        }
+
+        .header-buttons {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .stats div {
+            flex: 1;
+            text-align: center;
+            margin: 0 10px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            max-width: 170px;
+        }
+
+        .charts {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .chart-container {
+            flex: 0 0 48%;
+            margin-bottom: 20px;
+            position: relative;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 400px; /* Fija la altura de todos los gráficos para que sean iguales */
+        }
+
+        .chart-title {
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            color: #2a6041;
+        }
+
+        .chart-legend {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            width: 120px;
+            text-align: left;
+        }
+
+        .chart-legend span {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .user-info {
+            text-align: right;
+            font-weight: bold;
+            color: #2a6041;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://amaguania.gob.ec/wp-content/uploads/2024/01/LOGOovalo-1024x549.png" alt="Logo" class="logo">
+        
+        <div class="header-buttons">
+            <h2>Dashboard de Pacientes</h2>
+            <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Cerrar Sesión</button>
+            </form>
+        </div>
+
+        <!-- Información del usuario -->
+        <div class="user-info">
+            Especialidad: {{ especialidad_usuario }}
+        </div>
+
+        <!-- Botones adicionales -->
+        <div class="btn-group mb-3">
+            <a href="{% url 'registrar_paciente' %}" class="btn btn-primary">Registrar Nuevo Paciente</a>
+            <a href="{% url 'buscar_paciente' %}" class="btn btn-primary">Buscar Paciente</a>
+            <a href="{% url 'index' %}" class="btn btn-secondary">Volver al Panel</a>
+        </div>
+
+        <div class="stats">
+            <div>
+                <h3>Total de Pacientes</h3>
+                <p>{{ total_pacientes }}</p>
+            </div>
+            <div>
+                <h3>Edad Promedio</h3>
+                <p>{{ promedio_edad|floatformat:2 }} años</p>
+            </div>
+        </div>
+
+        <div class="charts">
+            <div class="chart-container">
+                <div class="chart-title">Pacientes por Especialidad</div>
+                <canvas id="especialidadesChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Distribución por Sexo</div>
+                <canvas id="sexoChart"></canvas>
+                <div class="chart-legend">
+                    <span style="color: rgba(54, 162, 235, 1);">⬤ M: Masculino</span>
+                    <span style="color: rgba(255, 99, 132, 1);">⬤ F: Femenino</span>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Distribución de IMC</div>
+                <canvas id="imcChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Top 5 Sectores con más Registros</div>
+                <canvas id="sectoresChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const especialidadesData = {
+            labels: [{% for item in distribucion_especialidades %}"{{ item.especialidad__nombre }}",{% endfor %}],
+            datasets: [{
+                label: 'Pacientes por Especialidad',
+                data: [{% for item in distribucion_especialidades %}{{ item.total }},{% endfor %}],
+                backgroundColor: 'rgba(42, 96, 65, 0.6)',
+                borderColor: 'rgba(42, 96, 65, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const especialidadesChartConfig = {
+            type: 'bar',
+            data: especialidadesData,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        };
+
+        const sexoData = {
+            labels: [{% for item in distribucion_sexo %}"{{ item.sexo }}",{% endfor %}],
+            datasets: [{
+                label: 'Distribución por Sexo',
+                data: [{% for item in distribucion_sexo %}{{ item.total }},{% endfor %}],
+                backgroundColor: ['rgba(54, 162, 235, 0.6)', 'rgba(255, 99, 132, 0.6)'],
+                borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'],
+                borderWidth: 1
+            }]
+        };
+
+        const sexoChartConfig = {
+            type: 'doughnut',
+            data: sexoData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false // Oculta la leyenda nativa del gráfico para usar la personalizada
+                    },
+                }
+            }
+        };
+
+        const imcData = {
+            labels: ["Delgadez severa", "Delgadez moderada", "Delgadez leve", "Peso normal", "Sobrepeso", "Obesidad grado I", "Obesidad grado II", "Obesidad grado III (mórbida)"],
+            datasets: [{
+                label: 'Distribución de IMC',
+                data: [{% for item in distribucion_imc %}{{ item.total }},{% endfor %}],
+                backgroundColor: 'rgba(255, 159, 64, 0.6)',
+                borderColor: 'rgba(255, 159, 64, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const imcChartConfig = {
+            type: 'bar',
+            data: imcData,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        };
+
+        const sectoresData = {
+            labels: [{% for item in top_sectores %}"{{ item.sector }}",{% endfor %}],
+            datasets: [{
+                label: 'Top 5 Sectores con más registros',
+                data: [{% for item in top_sectores %}{{ item.total }},{% endfor %}],
+                backgroundColor: 'rgba(153, 102, 255, 0.6)',
+                borderColor: 'rgba(153, 102, 255, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const sectoresChartConfig = {
+            type: 'bar',
+            data: sectoresData,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        };
+
+        window.onload = function() {
+            const especialidadesCtx = document.getElementById('especialidadesChart').getContext('2d');
+            const sexoCtx = document.getElementById('sexoChart').getContext('2d');
+            const imcCtx = document.getElementById('imcChart').getContext('2d');
+            const sectoresCtx = document.getElementById('sectoresChart').getContext('2d');
+            new Chart(especialidadesCtx, especialidadesChartConfig);
+            new Chart(sexoCtx, sexoChartConfig);
+            new Chart(imcCtx, imcChartConfig);
+            new Chart(sectoresCtx, sectoresChartConfig);
+        };
+    </script>
+</body>
+</html>
