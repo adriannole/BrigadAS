@@ -1,5 +1,34 @@
 from django import forms
-from .models import Paciente, Especialidad
+from .models import Paciente, Especialidad, User
+from django.core.exceptions import ValidationError
+
+
+
+####################################################################
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'especialidad', 'is_admin')
+
+class CustomUserChangeForm(UserChangeForm):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'especialidad', 'is_admin')
+
+
+
+
+
+
+#####################################################
+
+
+
+
+
+
 
 SECTORES = [
     ("HUERTOS FAMILIARES MEDICOS DE PICHINCHA", "HUERTOS FAMILIARES MEDICOS DE PICHINCHA"),
@@ -187,7 +216,61 @@ class PacienteForm(forms.ModelForm):
 
     def clean_cedula(self):
         cedula = self.cleaned_data.get('cedula')
+        if len(cedula) != 10:
+            raise ValidationError("La cédula debe tener exactamente 10 dígitos.")
+        if not cedula.isdigit():
+            raise ValidationError("La cédula debe contener solo números.")
         if Paciente.objects.filter(cedula=cedula).exists():
-            raise forms.ValidationError("Este usuario ya está registrado. Verifique en la base de datos.")
+            raise ValidationError("Este usuario ya está registrado. Verifique en la base de datos.")
         return cedula
-    
+
+
+    def clean_telefono(self):
+        telefono = self.cleaned_data.get('telefono')
+        if not telefono.isdigit():
+            raise ValidationError("El teléfono debe contener solo números.")
+        if len(telefono) < 7 or len(telefono) > 10:
+            raise ValidationError("El teléfono debe tener entre 7 y 10 dígitos.")
+        return telefono
+
+    def clean_peso(self):
+        peso = self.cleaned_data.get('peso')
+        if peso <= 0:
+            raise ValidationError("El peso debe ser un valor positivo.")
+        return peso
+
+    def clean_talla(self):
+        talla = self.cleaned_data.get('talla')
+        if talla <= 0:
+            raise ValidationError("La talla debe ser un valor positivo.")
+        return talla
+
+    def clean_temperatura(self):
+        temperatura = self.cleaned_data.get('temperatura')
+        if temperatura < 35 or temperatura > 42:
+            raise ValidationError("La temperatura debe estar entre 35 y 42 grados Celsius.")
+        return temperatura
+
+    def clean_frecuencia_cardiaca(self):
+        frecuencia_cardiaca = self.cleaned_data.get('frecuencia_cardiaca')
+        if frecuencia_cardiaca <= 0:
+            raise ValidationError("La frecuencia cardíaca debe ser un valor positivo.")
+        return frecuencia_cardiaca
+
+    def clean_frecuencia_respiratoria(self):
+        frecuencia_respiratoria = self.cleaned_data.get('frecuencia_respiratoria')
+        if frecuencia_respiratoria <= 0:
+            raise ValidationError("La frecuencia respiratoria debe ser un valor positivo.")
+        return frecuencia_respiratoria
+
+    def clean_nivel_glucosa(self):
+        nivel_glucosa = self.cleaned_data.get('nivel_glucosa')
+        if nivel_glucosa <= 0:
+            raise ValidationError("El nivel de glucosa debe ser un valor positivo.")
+        return nivel_glucosa
+
+    def clean_saturacion(self):
+        saturacion = self.cleaned_data.get('saturacion')
+        if saturacion < 0 or saturacion > 100:
+            raise ValidationError("La saturación debe estar entre 0 y 100%.")
+        return saturacion

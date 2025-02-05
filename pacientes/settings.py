@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ufg#up-n%zg901b&zvpt3&yxqbnxw-*ik0fzhnj(v-o!g)4)s+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
@@ -79,7 +79,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'brigadas_medicas',
         'USER': 'postgres',
-        'PASSWORD': 'arbolito157',
+        'PASSWORD': 'arbolito',
         'HOST': 'localhost',  # O el host donde está tu base de datos
         'PORT': '5432',  # O el puerto de tu base de datos
     }
@@ -122,6 +122,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
