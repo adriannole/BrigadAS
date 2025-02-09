@@ -16,7 +16,27 @@ Clona el repositorio del proyecto a tu máquina local:
 ```bash
 git clone https://github.com/tu_usuario/BRIGADAS_V2.git
 cd BRIGADAS_V2
-
 docker compose build
 docker compose up 
+
+
+## 2. Aplicar las Migraciones
+Aplica las migraciones de la base de datos:
+
+docker-compose exec web python manage.py migrate
+
+
+## 3. Crear un Superusuario
+Crea un superusuario para acceder al panel de administración de Django:
+docker-compose exec web python manage.py createsuperuser
+
+name: root
+password: 123456 (opcional)
+
+
+##4. Entrar a cualquiera de las Rutas
+
+http://localhost:8000/admin/   ##Administracion
+
+http://localhost:8000/accounts/login/  ##Especialistas
 
