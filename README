@@ -1,0 +1,22 @@
+# BRIGADAS V2
+
+BRIGADAS V2 es una aplicación web desarrollada con Django para gestionar la información de pacientes, incluyendo su distribución por especialidad, sexo, índice de masa corporal (IMC) y sectores con más registros. La aplicación incluye un panel de administración, gráficos interactivos y funcionalidades de registro y búsqueda de pacientes.
+
+## Requisitos
+
+- Docker
+- Docker Compose
+
+## Configuración del Proyecto
+
+### 1. Clonar el Repositorio y Correr en Docker
+
+Clona el repositorio del proyecto a tu máquina local:
+
+```bash
+git clone https://github.com/tu_usuario/BRIGADAS_V2.git
+cd BRIGADAS_V2
+
+docker compose build
+docker compose up 
+
