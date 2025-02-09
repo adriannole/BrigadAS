@@ -35,7 +35,16 @@ def index(request):
     distribucion_especialidades = Paciente.objects.values('especialidad__nombre').annotate(total=Count('id'))
     distribucion_sexo = Paciente.objects.values('sexo').annotate(total=Count('id'))
     promedio_imc = Paciente.objects.aggregate(Avg('imc'))['imc__avg']
-    distribucion_imc = Paciente.objects.values('diagnostico_imc').annotate(total=Count('id'))
+    
+    # Procesar la distribución de IMC
+    imc_labels = ["Delgadez severa", "Delgadez moderada", "Delgadez leve", "Peso normal", "Sobrepeso", "Obesidad grado I", "Obesidad grado II", "Obesidad grado III (obesidad mórbida)"]
+    distribucion_imc = {label: 0 for label in imc_labels}
+    for item in Paciente.objects.values('diagnostico_imc').annotate(total=Count('id')):
+        if item['diagnostico_imc'] in distribucion_imc:
+            distribucion_imc[item['diagnostico_imc']] = item['total']
+    
+    distribucion_imc_list = [distribucion_imc[label] for label in imc_labels]
+    
     top_sectores = Paciente.objects.values('sector').annotate(total=Count('id')).order_by('-total')[:5]
 
     context = {
@@ -45,7 +54,7 @@ def index(request):
         'distribucion_especialidades': distribucion_especialidades,
         'distribucion_sexo': distribucion_sexo,
         'promedio_imc': promedio_imc,
-        'distribucion_imc': distribucion_imc,
+        'distribucion_imc': distribucion_imc_list,
         'top_sectores': top_sectores,
     }
     return render(request, 'registro/index.html', context)

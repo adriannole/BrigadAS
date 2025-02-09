@@ -216,12 +216,14 @@ class PacienteForm(forms.ModelForm):
 
     def clean_cedula(self):
         cedula = self.cleaned_data.get('cedula')
+        especialidad = self.cleaned_data.get('especialidad')
+        
         if len(cedula) != 10:
             raise ValidationError("La cédula debe tener exactamente 10 dígitos.")
         if not cedula.isdigit():
             raise ValidationError("La cédula debe contener solo números.")
-        if Paciente.objects.filter(cedula=cedula).exists():
-            raise ValidationError("Este usuario ya está registrado. Verifique en la base de datos.")
+        if Paciente.objects.filter(cedula=cedula, especialidad=especialidad).exists():
+            raise ValidationError("Este usuario ya está registrado en esta especialidad. Verifique en la base de datos.")
         return cedula
 
 
