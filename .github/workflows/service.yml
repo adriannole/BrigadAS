@@ -11,39 +11,12 @@ deploy:
       key: ${{ secrets.AWS_EC2_KEY }}
       port: 22
       script: |
-        # Crear la carpeta si no existe
-        mkdir -p /home/ec2-user/BrigadAS
-        cd /home/ec2-user/BrigadAS
+        # Detener y eliminar cualquier contenedor anterior con el mismo nombre
+        docker stop brigadas_service || true
+        docker rm brigadas_service || true
 
-        # Crear el archivo docker-compose.yml si no existe
-        cat <<EOF > docker-compose.yml
-        version: '3'
-        services:
-          db:
-            image: postgres:13
-            environment:
-              POSTGRES_DB: brigadas_medicas
-              POSTGRES_USER: postgres
-              POSTGRES_PASSWORD: arbolito
-            volumes:
-              - postgres_data:/var/lib/postgresql/data
-
-          web:
-            image: ${{ secrets.DOCKER_USERNAME }}/brigadas:latest
-            ports:
-              - "8000:8000"
-            depends_on:
-              - db
-
-        volumes:
-          postgres_data:
-        EOF
-
-        # Descargar la última versión de la imagen desde Docker Hub
+        # Descargar la última imagen de Docker Hub
         docker pull ${{ secrets.DOCKER_USERNAME }}/brigadas:latest
 
-        # Detener y eliminar contenedores previos si existen
-        docker-compose down || true
-
-        # Levantar los servicios
-        docker-compose up -d
+        # Ejecutar el contenedor con los puertos adecuados
+        docker run -d -p 8000:8000 --name brigadas_service ${{ secrets.DOCKER_USERNAME }}/brigadas:latest
