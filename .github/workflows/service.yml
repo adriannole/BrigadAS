@@ -45,6 +45,5 @@ jobs:
         key: ${{ secrets.AWS_EC2_KEY }}
         port: 22
         script: |
-       
           docker pull ${{ secrets.DOCKER_USERNAME }}/brigadas:latest
           docker-compose -f /home/ec2-user/BrigadAS/docker-compose.yml up -d
